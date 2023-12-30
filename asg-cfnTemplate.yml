@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  This VFN template create ASG and ALB with ASG Target Tracking Policy
+Parameters:
+  myVps:
+    Description: choose your vps
+    Type: AWS::EC2::VPC::Id
+
+
+Mappings:
+  
+
+  
+Resources:
+  
+
+  myTargetGrp:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 30
+      HealthCheckPath: /  
+      HealthCheckPort: 80
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 30
+      HealthyThresholdCount: 3
+      Name: asg-cfn-16  
+      Port: 80
+      Protocol: HTTP
+      UnhealthyThresholdCount: 2
+      VpcId: !Ref myVps
+
+  
+
+
+  mySecGrp:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: sssh and http  # Required
+    
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags: 
+        Key: Name
+        Value: asg-16-cfn
+
+      VpcId: !Ref myVps
+Outputs:
